@@ -14,6 +14,7 @@ namespace LoveMeDo
         Thread conn_check;
         string ip_addr;
         int port;
+        bool manual_dc;
 
         public MainWindow()
         {
@@ -28,17 +29,19 @@ namespace LoveMeDo
 
         private void ConnectionCheck()
         {
-            while (client.Connected) { }
-            Dispatcher.Invoke(() => {
-                Console.WriteLine("Connection dropped");
-                buttonModbusStart.Click += OnButtonConnectClicked;
-                buttonModbusStart.Click -= OnButtonDisconnectClicked;
-                buttonModbusStart.Content = "Connect";
-                boxModbusIP.IsEnabled = true;
-                boxModbusPort.IsEnabled = true;
-                buttonModbusExecute.IsEnabled = false;
-            } );
-            
+            while (client.Connected) { Thread.Sleep(1000); }
+            if (!manual_dc)
+            {
+                Dispatcher.Invoke(() => {
+                    Console.WriteLine("Connection dropped");
+                    buttonModbusStart.Click += OnButtonConnectClicked;
+                    buttonModbusStart.Click -= OnButtonDisconnectClicked;
+                    buttonModbusStart.Content = "Connect";
+                    boxModbusIP.IsEnabled = true;
+                    boxModbusPort.IsEnabled = true;
+                    buttonModbusExecute.IsEnabled = false;
+                });
+            }
         }
 
         public void OnButtonConnectClicked(object sender, RoutedEventArgs e)
@@ -68,6 +71,7 @@ namespace LoveMeDo
                 boxModbusIP.IsEnabled = false;
                 boxModbusPort.IsEnabled = false;
                 buttonModbusExecute.IsEnabled = true;
+                manual_dc = false;
                 conn_check.Start();
             }
         }
@@ -76,6 +80,7 @@ namespace LoveMeDo
         {
             if (client.Connected)
             {
+                manual_dc = true;
                 client.Disconnect();
                 labelLab2CStatus.Content = "Status: Not connected";
                 Console.WriteLine("Disconnected from " + ip_addr);
@@ -104,10 +109,16 @@ namespace LoveMeDo
                         {
                             output = client.ReadCoils(offset, quantity);
                         }
+                        catch (IOException)
+                        {
+                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            client.Disconnect();
+                            output = new bool[0];
+                        }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
                             Console.WriteLine("Something went wrong");
-                            output = new bool[] { false };
+                            output = new bool[0];
                         }
                         foreach (bool b in output)
                         {
@@ -115,7 +126,6 @@ namespace LoveMeDo
                             else Console.Write("0 ");
                         }
                         Console.Write('\n');
-                        
                         break;
                     case "Read holding registers":
                         break;

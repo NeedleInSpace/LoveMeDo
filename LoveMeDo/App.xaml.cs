@@ -5,8 +5,5 @@ namespace LoveMeDo
     public partial class App : Application
     {
 
-
-
-
     }
 }
