@@ -25,6 +25,22 @@ namespace LoveMeDo
             {
                 IsBackground = true
             };
+            boxModbusOp.SelectionChanged += new SelectionChangedEventHandler(OnModbusSelChanged);
+        }
+
+        public void OnModbusSelChanged(object sender, EventArgs e)
+        {
+            // Deactivate write controls
+            if (boxModbusOp.SelectedIndex >= 0 && boxModbusOp.SelectedIndex <= 3)
+            {
+                boxModbusWriteValue.IsEnabled = false;
+                boxRegOffsetWr.IsEnabled = false;
+            }
+            else
+            {
+                boxModbusWriteValue.IsEnabled = true;
+                boxRegOffsetWr.IsEnabled = true;
+            }
         }
 
         private void ConnectionCheck()
@@ -116,7 +132,7 @@ namespace LoveMeDo
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong");
+                            Console.WriteLine("Something went wrong, check parameters");
                             discrete_output = new bool[0];
                         }
                         foreach (bool b in discrete_output)
@@ -140,7 +156,7 @@ namespace LoveMeDo
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong");
+                            Console.WriteLine("Something went wrong, check parameters");
                             coil_output = new bool[0];
                         }
                         foreach (bool b in coil_output)
@@ -165,7 +181,7 @@ namespace LoveMeDo
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong");
+                            Console.WriteLine("Something went wrong, check parameters");
                             holding_output = new int[0];
                         }
                         foreach (int i in holding_output)
@@ -189,7 +205,7 @@ namespace LoveMeDo
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong");
+                            Console.WriteLine("Something went wrong, check parameters");
                             inreg_output = new int[0];
                         }
                         foreach (int i in inreg_output)
@@ -213,7 +229,7 @@ namespace LoveMeDo
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong");
+                            Console.WriteLine("Something went wrong, check parameters");
                         }
                         break;
                     case "Write single register":
@@ -229,7 +245,7 @@ namespace LoveMeDo
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong");
+                            Console.WriteLine("Something went wrong, check parameters");
                         }
                         break;
                     case "Write multiple coil":
@@ -250,7 +266,7 @@ namespace LoveMeDo
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong");
+                            Console.WriteLine("Something went wrong, check parameters");
                         }
                         break;
                     case "Write multiple registers":
@@ -271,15 +287,47 @@ namespace LoveMeDo
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong");
+                            Console.WriteLine("Something went wrong, check parameters");
                         }
                         break;
                     case "R/W multiple registers":
+                        int[] reg_write = new int[quantity];
+                        int[] reg_read;
+                        int offset_write = int.Parse(boxRegOffsetWr.Text);
+                        for (int i = 0; i < quantity; i++)
+                        {
+                            reg_write[i] = val;
+                        }
+                        try
+                        {
+                            reg_read = client.ReadWriteMultipleRegisters(offset, quantity, offset_write, reg_write);
+                            Console.WriteLine("Read OK");
+                            foreach (int i in reg_read)
+                            {
+                                Console.Write(i + " ");
+                            }
+                            Console.WriteLine("\nWrite OK");
+                        }
+                        catch (IOException)
+                        {
+                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            client.Disconnect();
+                        }
+                        catch (EasyModbus.Exceptions.ModbusException ex)
+                        {
+                            if (ex is EasyModbus.Exceptions.FunctionCodeNotSupportedException)
+                            {
+                                Console.WriteLine("Function code not supported");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Something went wrong, check parameters");
+                            }
+                        }
                         break;
                 }
             }
         }
-
     }
 
     public class OutRedirect : TextWriter
