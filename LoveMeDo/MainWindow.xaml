@@ -7,14 +7,23 @@
         mc:Ignorable="d"
         Title="LoveMeDo" Height="600" Width="800" Background="White" ResizeMode="NoResize">
     <Grid>
-        <TabControl Margin="10">
-            <TabItem x:Name="tabLab1" Header="Лабораторная работа №1">
-                <Grid Background="#FFE5E5E5">
-                    <Label Content="Some text for lab1" HorizontalAlignment="Left" Margin="80,36,0,0" VerticalAlignment="Top" Height="42" Width="116"/>
+        <TabControl Margin="10,10,10,340">
+            <TabItem x:Name="tabLab1" Header="Лабораторная работа №1" Margin="0">
+                <Grid Background="#FFE5E5E5" Margin="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="IP Address" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="35" Width="140" FontSize="16"/>
+                    <TextBox x:Name="boxModbusSendIP" HorizontalAlignment="Left" Height="33" Margin="10,52,0,0" TextWrapping="Wrap" Text="0.0.0.0" VerticalAlignment="Top" Width="140" FontSize="16"/>
+                    <Label Content="Port" HorizontalAlignment="Left" Margin="10,91,0,0" VerticalAlignment="Top" Height="35" Width="140" FontSize="16"/>
+                    <TextBox x:Name="boxModbusSendPort" HorizontalAlignment="Left" Height="33" Margin="10,133,0,0" TextWrapping="Wrap" Text="502" VerticalAlignment="Top" Width="140" FontSize="16"/>
+                    <Button x:Name="buttonModbusSend" Content="Send" HorizontalAlignment="Left" Margin="231,91,0,0" VerticalAlignment="Top" Width="362" Height="75" FontSize="48"/>
+                    <Label Content="Data to send (HEX)" HorizontalAlignment="Left" Margin="231,10,0,0" VerticalAlignment="Top" Height="35" Width="171" FontSize="16"/>
+                    <TextBox x:Name="boxModbusSendData" HorizontalAlignment="Left" Height="33" Margin="231,52,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="362" FontSize="16"/>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tabLab2" Header="Лабораторная работа №2">
-                <Grid Background="#FFE5E5E5">
+            <TabItem x:Name="tabLab2" Header="Лабораторная работа №2" Margin="0">
+                <Grid Background="#FFE5E5E5" Margin="0">
                     <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="166" Margin="10,10,0,0" VerticalAlignment="Top" Width="226">
                         <Label x:Name="labelLab2CStatus" Content="Status: Not connected" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
                     </Border>
@@ -26,19 +35,19 @@
                     <TextBox x:Name="boxRegOffset" HorizontalAlignment="Left" Height="26" Margin="434,45,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="158" FontSize="16"/>
                     <Label Content="Register address" HorizontalAlignment="Left" Margin="295,45,0,0" VerticalAlignment="Top" Width="134" Height="26"/>
                     <Label Content="Operation" HorizontalAlignment="Left" Margin="295,14,0,0" Width="134" Height="26" VerticalAlignment="Top"/>
-                    <TextBox x:Name="boxConsoleOutput" HorizontalAlignment="Left" Height="332" Margin="10,181,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="748" FontSize="16" FontFamily="Courier New" IsReadOnly="True"/>
                     <ComboBox x:Name="boxModbusOp" HorizontalAlignment="Left" Margin="434,14,0,0" VerticalAlignment="Top" Width="158" IsReadOnly="True" ItemsSource="{DynamicResource comboModbusFn}" SelectedIndex="0" Height="26"/>
                     <Label Content="# of registers" HorizontalAlignment="Left" Margin="295,76,0,0" VerticalAlignment="Top" Width="134"/>
                     <TextBox x:Name="boxRegNumber" HorizontalAlignment="Left" Height="26" Margin="434,76,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="158" FontSize="16"/>
                     <Button x:Name="buttonModbusExecute" Click="OnExecuteButtonClicked" Content="Execute" HorizontalAlignment="Left" Margin="295,147,0,0" VerticalAlignment="Top" Width="297" Height="25" FontSize="16"/>
                     <Label Content="Value to write" HorizontalAlignment="Left" Margin="295,107,0,0" VerticalAlignment="Top" Width="134" VerticalContentAlignment="Center" Height="26"/>
                     <TextBox x:Name="boxModbusWriteValue" HorizontalAlignment="Left" Height="26" Margin="434,107,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="158" FontSize="16" IsEnabled="False"/>
-                    <TextBox x:Name="boxRegOffsetWr" HorizontalAlignment="Left" Height="26" Margin="618,45,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="140" FontSize="16" IsEnabled="False"/>
+                    <TextBox x:Name="boxRegOffsetWr" Height="26" Margin="618,45,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" FontSize="16" IsEnabled="False"/>
                     <Label Content="Register address (write)" HorizontalAlignment="Left" Margin="618,14,0,0" VerticalAlignment="Top" Width="140"/>
 
                 </Grid>
             </TabItem>
         </TabControl>
+        <TextBox x:Name="boxConsoleOutput" Margin="10,240,10,10" TextWrapping="Wrap" FontSize="16" FontFamily="Courier New" IsReadOnly="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible"/>
 
     </Grid>
 </Window>
