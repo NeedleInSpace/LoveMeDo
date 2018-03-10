@@ -97,30 +97,53 @@ namespace LoveMeDo
         {
             if (client.Connected)
             {
+                int offset = int.Parse(boxRegOffset.Text);
+                int quantity = int.Parse(boxRegNumber.Text);
+                int val = int.Parse(boxModbusWriteValue.Text);
                 switch (boxModbusOp.Text)
                 {
                     case "Read discrete inputs":
-                        break;
-                    case "Read coils":
-                        int offset = int.Parse(boxRegOffset.Text);
-                        int quantity = int.Parse(boxRegNumber.Text);
-                        bool[] output;
+                        bool[] discrete_output;
                         try
                         {
-                            output = client.ReadCoils(offset, quantity);
+                            discrete_output = client.ReadDiscreteInputs(offset, quantity);
                         }
                         catch (IOException)
                         {
                             Console.WriteLine("There's something wrong with connection, dropping it");
                             client.Disconnect();
-                            output = new bool[0];
+                            discrete_output = new bool[0];
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
                             Console.WriteLine("Something went wrong");
-                            output = new bool[0];
+                            discrete_output = new bool[0];
                         }
-                        foreach (bool b in output)
+                        foreach (bool b in discrete_output)
+                        {
+                            if (b) Console.Write("1 ");
+                            else Console.Write("0 ");
+                        }
+                        Console.Write('\n');                        
+                        break;
+                    case "Read coils":
+                        bool[] coil_output;
+                        try
+                        {
+                            coil_output = client.ReadCoils(offset, quantity);
+                        }
+                        catch (IOException)
+                        {
+                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            client.Disconnect();
+                            coil_output = new bool[0];
+                        }
+                        catch (EasyModbus.Exceptions.ModbusException)
+                        {
+                            Console.WriteLine("Something went wrong");
+                            coil_output = new bool[0];
+                        }
+                        foreach (bool b in coil_output)
                         {
                             if (b) Console.Write("1 ");
                             else Console.Write("0 ");
@@ -128,16 +151,128 @@ namespace LoveMeDo
                         Console.Write('\n');
                         break;
                     case "Read holding registers":
+                        int[] holding_output;
+
+                        try
+                        {
+                            holding_output = client.ReadHoldingRegisters(offset, quantity);
+                        }
+                        catch (IOException)
+                        {
+                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            client.Disconnect();
+                            holding_output = new int[0];
+                        }
+                        catch (EasyModbus.Exceptions.ModbusException)
+                        {
+                            Console.WriteLine("Something went wrong");
+                            holding_output = new int[0];
+                        }
+                        foreach (int i in holding_output)
+                        {
+                            Console.Write(i.ToString() + " ");
+                        }
+                        Console.WriteLine("");
                         break;
                     case "Read input registers":
+                        int[] inreg_output;
+
+                        try
+                        {
+                            inreg_output = client.ReadInputRegisters(offset, quantity);
+                        }
+                        catch (IOException)
+                        {
+                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            client.Disconnect();
+                            inreg_output = new int[0];
+                        }
+                        catch (EasyModbus.Exceptions.ModbusException)
+                        {
+                            Console.WriteLine("Something went wrong");
+                            inreg_output = new int[0];
+                        }
+                        foreach (int i in inreg_output)
+                        {
+                            Console.Write(i.ToString() + " ");
+                        }
+                        Console.WriteLine("");
                         break;
                     case "Write single coil":
+
+                        bool coil = val > 0 ? true : false;
+                        try
+                        {
+                            client.WriteSingleCoil(offset, coil);
+                            Console.WriteLine("Write OK");
+                        }
+                        catch (IOException)
+                        {
+                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            client.Disconnect();
+                        }
+                        catch (EasyModbus.Exceptions.ModbusException)
+                        {
+                            Console.WriteLine("Something went wrong");
+                        }
                         break;
                     case "Write single register":
+                        try
+                        {
+                            client.WriteSingleRegister(offset, val);
+                            Console.WriteLine("Write OK");
+                        }
+                        catch (IOException)
+                        {
+                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            client.Disconnect();
+                        }
+                        catch (EasyModbus.Exceptions.ModbusException)
+                        {
+                            Console.WriteLine("Something went wrong");
+                        }
                         break;
                     case "Write multiple coil":
+                        bool[] coil_input = new bool[quantity];
+                        for (int i = 0; i < quantity; i++)
+                        {
+                            coil_input[i] = val > 0 ? true : false;
+                        }
+                        try
+                        {
+                            client.WriteMultipleCoils(offset, coil_input);
+                            Console.WriteLine("Write OK");
+                        }
+                        catch (IOException)
+                        {
+                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            client.Disconnect();
+                        }
+                        catch (EasyModbus.Exceptions.ModbusException)
+                        {
+                            Console.WriteLine("Something went wrong");
+                        }
                         break;
                     case "Write multiple registers":
+                        int[] reg_out = new int[quantity];
+                        for (int i = 0; i < quantity; i++)
+                        {
+                            reg_out[0] = val;
+                        }
+                        try
+                        {
+                            client.WriteMultipleRegisters(offset, reg_out);
+                            Console.WriteLine("Write OK");
+                        }
+                        catch (IOException)
+                        {
+                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            client.Disconnect();
+                        }
+                        catch (EasyModbus.Exceptions.ModbusException)
+                        {
+                            Console.WriteLine("Something went wrong");
+                        }
                         break;
                     case "R/W multiple registers":
                         break;
