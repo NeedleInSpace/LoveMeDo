@@ -4,13 +4,17 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Linq;
+using System.Net.Sockets;
 using EasyModbus;
+
 
 namespace LoveMeDo
 {
     public partial class MainWindow : Window
     {
         ModbusClient client;
+        Socket sock;
         Thread conn_check;
         string ip_addr;
         int port;
@@ -26,6 +30,7 @@ namespace LoveMeDo
                 IsBackground = true
             };
             boxModbusOp.SelectionChanged += new SelectionChangedEventHandler(OnModbusSelChanged);
+            sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
         public void OnModbusSelChanged(object sender, EventArgs e)
@@ -327,6 +332,58 @@ namespace LoveMeDo
                         break;
                 }
             }
+        }
+
+        public void OnSendButtonClicked(object sender, RoutedEventArgs e)
+        {
+            string ip_addr = boxModbusSendIP.Text;
+            int port = int.Parse(boxModbusSendPort.Text);
+            string string_buffer = boxModbusSendData.Text;
+            byte[] send_buffer = GetBytes(string_buffer);
+            byte[] receive_buffer = new byte[1024];
+
+            if (!sock.Connected)
+            {
+                try
+                {
+                    sock.Connect(ip_addr, port);
+                }
+                catch
+                {
+                    Console.WriteLine("Cannot connect to " + ip_addr);
+                    return;
+                }
+            }
+            try
+            {
+                sock.Send(send_buffer);
+            }
+            catch
+            {
+                Console.WriteLine("Cannot send data to " + ip_addr);
+                sock.Disconnect(false);
+                return;
+            }
+            try
+            {
+                var len = sock.Receive(receive_buffer);
+                Array.Resize<byte>(ref receive_buffer, len);
+                Console.WriteLine("RX: " + BitConverter.ToString(receive_buffer));
+            }
+            catch
+            {
+                Console.WriteLine("Cannot get response");
+                sock.Disconnect(false);
+                return;
+            }
+            sock.Shutdown(SocketShutdown.Both);
+
+        }
+
+        // Split whitespace separated string into byte array
+        public static byte[] GetBytes(string value)
+        {
+            return value.Split(' ').Select(s => byte.Parse(s, System.Globalization.NumberStyles.HexNumber)).ToArray();
         }
     }
 
