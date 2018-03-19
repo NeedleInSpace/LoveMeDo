@@ -73,22 +73,22 @@ namespace LoveMeDo
 
             try
             {
-                Console.WriteLine("Connecting to " + ip_addr + " ...");
+                Console.WriteLine("Соединяю с " + ip_addr + " ...");
                 client.Connect();
             }
             catch (EasyModbus.Exceptions.ConnectionException)
             {
-                Console.WriteLine("Connection to " + ip_addr + " failed");
-                labelLab2CStatus.Content = "Status: Cannot connect";
+                Console.WriteLine("Соединение с " + ip_addr + " прервано");
+                labelLab2CStatus.Content = "Состояние: Ошибка соединения";
             }
             
             if (client.Connected)
             {
-                labelLab2CStatus.Content = "Status: Connected to " + ip_addr;
-                Console.WriteLine("Connected to " + ip_addr + ":" + port.ToString());
+                labelLab2CStatus.Content = "Состояние: Соединен с " + ip_addr;
+                Console.WriteLine("Соединен с " + ip_addr + ":" + port.ToString());
                 buttonModbusStart.Click -= OnButtonConnectClicked;
                 buttonModbusStart.Click += OnButtonDisconnectClicked;
-                buttonModbusStart.Content = "Disconnect";
+                buttonModbusStart.Content = "Отсоединить";
                 boxModbusIP.IsEnabled = false;
                 boxModbusPort.IsEnabled = false;
                 buttonModbusExecute.IsEnabled = true;
@@ -103,11 +103,11 @@ namespace LoveMeDo
             {
                 manual_dc = true;
                 client.Disconnect();
-                labelLab2CStatus.Content = "Status: Not connected";
-                Console.WriteLine("Disconnected from " + ip_addr);
+                labelLab2CStatus.Content = "Состояние: Нет соединения";
+                Console.WriteLine("Отключен от " + ip_addr);
                 buttonModbusStart.Click += OnButtonConnectClicked;
                 buttonModbusStart.Click -= OnButtonDisconnectClicked;
-                buttonModbusStart.Content = "Connect";
+                buttonModbusStart.Content = "Соединить";
                 boxModbusIP.IsEnabled = true;
                 boxModbusPort.IsEnabled = true;
                 buttonModbusExecute.IsEnabled = false;
@@ -131,13 +131,13 @@ namespace LoveMeDo
                         }
                         catch (IOException)
                         {
-                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            Console.WriteLine("Ошибка соединения. Соединение сброшено");
                             client.Disconnect();
                             discrete_output = new bool[0];
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong, check parameters");
+                            Console.WriteLine("Что-то пошло не так...");
                             discrete_output = new bool[0];
                         }
                         foreach (bool b in discrete_output)
@@ -155,13 +155,13 @@ namespace LoveMeDo
                         }
                         catch (IOException)
                         {
-                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            Console.WriteLine("Ошибка соединения. Соединение сброшено");
                             client.Disconnect();
                             coil_output = new bool[0];
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong, check parameters");
+                            Console.WriteLine("Что-то пошло не так...");
                             coil_output = new bool[0];
                         }
                         foreach (bool b in coil_output)
@@ -180,13 +180,13 @@ namespace LoveMeDo
                         }
                         catch (IOException)
                         {
-                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            Console.WriteLine("Ошибка соединения. Соединение сброшено");
                             client.Disconnect();
                             holding_output = new int[0];
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong, check parameters");
+                            Console.WriteLine("Что-то пошло не так...");
                             holding_output = new int[0];
                         }
                         foreach (int i in holding_output)
@@ -204,13 +204,13 @@ namespace LoveMeDo
                         }
                         catch (IOException)
                         {
-                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            Console.WriteLine("Ошибка соединения. Соединение сброшено");
                             client.Disconnect();
                             inreg_output = new int[0];
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong, check parameters");
+                            Console.WriteLine("Что-то пошло не так...");
                             inreg_output = new int[0];
                         }
                         foreach (int i in inreg_output)
@@ -225,32 +225,32 @@ namespace LoveMeDo
                         try
                         {
                             client.WriteSingleCoil(offset, coil);
-                            Console.WriteLine("Write OK");
+                            Console.WriteLine("ЗАП OK");
                         }
                         catch (IOException)
                         {
-                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            Console.WriteLine("Ошибка соединения. Соединение сброшено");
                             client.Disconnect();
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong, check parameters");
+                            Console.WriteLine("Что-то пошло не так...");
                         }
                         break;
                     case "Write single register":
                         try
                         {
                             client.WriteSingleRegister(offset, val);
-                            Console.WriteLine("Write OK");
+                            Console.WriteLine("ЗАП OK");
                         }
                         catch (IOException)
                         {
-                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            Console.WriteLine("Ошибка соединения. Соединение сброшено");
                             client.Disconnect();
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong, check parameters");
+                            Console.WriteLine("Что-то пошло не так...");
                         }
                         break;
                     case "Write multiple coil":
@@ -262,16 +262,16 @@ namespace LoveMeDo
                         try
                         {
                             client.WriteMultipleCoils(offset, coil_input);
-                            Console.WriteLine("Write OK");
+                            Console.WriteLine("ЗАП OK");
                         }
                         catch (IOException)
                         {
-                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            Console.WriteLine("Ошибка соединения. Соединение сброшено");
                             client.Disconnect();
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong, check parameters");
+                            Console.WriteLine("Что-то пошло не так...");
                         }
                         break;
                     case "Write multiple registers":
@@ -283,16 +283,16 @@ namespace LoveMeDo
                         try
                         {
                             client.WriteMultipleRegisters(offset, reg_out);
-                            Console.WriteLine("Write OK");
+                            Console.WriteLine("ЗАП OK");
                         }
                         catch (IOException)
                         {
-                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            Console.WriteLine("Ошибка соединения. Соединение сброшено");
                             client.Disconnect();
                         }
                         catch (EasyModbus.Exceptions.ModbusException)
                         {
-                            Console.WriteLine("Something went wrong, check parameters");
+                            Console.WriteLine("Что-то пошло не так...");
                         }
                         break;
                     case "R/W multiple registers":
@@ -306,27 +306,27 @@ namespace LoveMeDo
                         try
                         {
                             reg_read = client.ReadWriteMultipleRegisters(offset, quantity, offset_write, reg_write);
-                            Console.WriteLine("Read OK");
+                            Console.WriteLine("ЧТЕН OK");
                             foreach (int i in reg_read)
                             {
                                 Console.Write(i + " ");
                             }
-                            Console.WriteLine("\nWrite OK");
+                            Console.WriteLine("\nЗАП OK");
                         }
                         catch (IOException)
                         {
-                            Console.WriteLine("There's something wrong with connection, dropping it");
+                            Console.WriteLine("Ошибка соединения. Соединение сброшено");
                             client.Disconnect();
                         }
                         catch (EasyModbus.Exceptions.ModbusException ex)
                         {
                             if (ex is EasyModbus.Exceptions.FunctionCodeNotSupportedException)
                             {
-                                Console.WriteLine("Function code not supported");
+                                Console.WriteLine("Функция не поддерживается");
                             }
                             else
                             {
-                                Console.WriteLine("Something went wrong, check parameters");
+                                Console.WriteLine("Что-то пошло не так...");
                             }
                         }
                         break;
@@ -350,7 +350,7 @@ namespace LoveMeDo
                 }
                 catch
                 {
-                    Console.WriteLine("Cannot connect to " + ip_addr);
+                    Console.WriteLine("Не могу соединить с " + ip_addr);
                     return;
                 }
             }
@@ -360,7 +360,7 @@ namespace LoveMeDo
             }
             catch
             {
-                Console.WriteLine("Cannot send data to " + ip_addr);
+                Console.WriteLine("Не могу отправить данные на " + ip_addr);
                 sock.Disconnect(false);
                 return;
             }
@@ -372,7 +372,7 @@ namespace LoveMeDo
             }
             catch
             {
-                Console.WriteLine("Cannot get response");
+                Console.WriteLine("Не могу получить ответ");
                 sock.Disconnect(false);
                 return;
             }
