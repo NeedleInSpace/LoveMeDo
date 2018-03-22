@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Linq;
 using System.Net.Sockets;
 using EasyModbus;
+using Sharp7;
 
 
 namespace LoveMeDo
@@ -14,6 +15,7 @@ namespace LoveMeDo
     public partial class MainWindow : Window
     {
         ModbusClient client;
+        S7Client s7client;
         Socket sock;
         Thread conn_check;
         string ip_addr;
@@ -33,6 +35,7 @@ namespace LoveMeDo
             sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
+        // Modbus section handlers
         public void OnModbusSelChanged(object sender, EventArgs e)
         {
             // Deactivate write controls
@@ -334,6 +337,7 @@ namespace LoveMeDo
             }
         }
 
+        // Raw data send section
         public void OnSendButtonClicked(object sender, RoutedEventArgs e)
         {
             string ip_addr = boxModbusSendIP.Text;
@@ -379,6 +383,42 @@ namespace LoveMeDo
             sock.Shutdown(SocketShutdown.Both);
 
         }
+        
+        // S7 section handlers
+        public void OnButtonS7ConnectClicked(object sender, RoutedEventArgs e)
+        {
+            s7client = new S7Client();
+            ip_addr = boxS7Ip.Text;
+            int rack = int.Parse(boxS7Rack.Text);
+            int slot = int.Parse(boxS7Slot.Text);
+            
+            try
+            {
+                s7client.ConnectTo(ip_addr, rack, slot);
+                Console.WriteLine("Соединен с " + ip_addr);
+                buttonS7Connect.Click -= OnButtonS7ConnectClicked;
+                buttonS7Connect.Click += OnButtonS7DisconnectClicked;
+                buttonS7Connect.Content = "Отсоединить";
+                
+            }
+            catch
+            {
+                Console.WriteLine("Не могу соединить с" + ip_addr);
+            }
+        }
+
+        public void OnButtonS7DisconnectClicked(object sender, RoutedEventArgs e)
+        {
+            if (s7client.Connected)
+            {
+                s7client.Disconnect();
+                Console.WriteLine("Отсоединен от " + ip_addr);
+                buttonS7Connect.Click += OnButtonS7ConnectClicked;
+                buttonS7Connect.Click -= OnButtonS7DisconnectClicked;
+                buttonS7Connect.Content = "Соединить";
+            }
+        }
+
 
         // Split whitespace separated string into byte array
         public static byte[] GetBytes(string value)
