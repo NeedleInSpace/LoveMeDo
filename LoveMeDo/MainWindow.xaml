@@ -33,7 +33,7 @@
                     </Border>
                     <Label Content="IP адрес" HorizontalAlignment="Left" Margin="30,26,0,0" VerticalAlignment="Top" Width="120" FontSize="16" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="boxModbusIP" HorizontalAlignment="Left" Height="30" Margin="30,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" AutomationProperties.HelpText="Enter IP here" FontSize="16" Grid.ColumnSpan="2"/>
-                    <Button x:Name="buttonModbusStart" Click="OnButtonConnectClicked" Content="Соединить" HorizontalAlignment="Left" Margin="30,97,0,0" VerticalAlignment="Top" Width="178" Height="25" FontSize="16" Grid.ColumnSpan="2"/>
+                    <Button x:Name="buttonModbusStart" Click="OnButtonMbusConnectClicked" Content="Соединить" HorizontalAlignment="Left" Margin="30,97,0,0" VerticalAlignment="Top" Width="178" Height="25" FontSize="16" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="boxModbusPort" HorizontalAlignment="Left" Height="30" Margin="77,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="53" FontSize="16" Text="502" Grid.Column="1"/>
                     <Label Content="Порт" HorizontalAlignment="Left" Margin="77,26,0,0" VerticalAlignment="Top" Width="53" FontSize="16" Grid.Column="1"/>
                     <TextBox x:Name="boxRegOffset" HorizontalAlignment="Left" Height="26" Margin="356,45,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="158" FontSize="16" Grid.Column="1"/>
@@ -42,7 +42,7 @@
                     <ComboBox x:Name="boxModbusOp" HorizontalAlignment="Left" Margin="356,14,0,0" VerticalAlignment="Top" Width="158" IsReadOnly="True" ItemsSource="{DynamicResource comboModbusFn}" SelectedIndex="0" Height="26" Grid.Column="1"/>
                     <Label Content="Кол-во регистров" HorizontalAlignment="Left" Margin="217,76,0,0" VerticalAlignment="Top" Width="134" Grid.Column="1"/>
                     <TextBox x:Name="boxRegNumber" HorizontalAlignment="Left" Height="26" Margin="356,76,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="158" FontSize="16" Grid.Column="1"/>
-                    <Button x:Name="buttonModbusExecute" Click="OnExecuteButtonClicked" Content="Отправить" HorizontalAlignment="Left" Margin="217,147,0,0" VerticalAlignment="Top" Width="297" Height="25" FontSize="16" Grid.Column="1"/>
+                    <Button x:Name="buttonModbusExecute" Click="OnButtonMbusExecuteClicked" Content="Отправить" HorizontalAlignment="Left" Margin="217,147,0,0" VerticalAlignment="Top" Width="297" Height="25" FontSize="16" Grid.Column="1"/>
                     <Label Content="Значение на запись" HorizontalAlignment="Left" Margin="217,107,0,0" VerticalAlignment="Top" Width="134" VerticalContentAlignment="Center" Height="26" Grid.Column="1"/>
                     <TextBox x:Name="boxModbusWriteValue" HorizontalAlignment="Left" Height="26" Margin="356,107,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="158" FontSize="16" IsEnabled="False" Grid.Column="1"/>
                     <TextBox x:Name="boxRegOffsetWr" Height="26" Margin="540,45,10,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" FontSize="16" IsEnabled="False" Grid.Column="1"/>

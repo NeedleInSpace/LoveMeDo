@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Sockets;
 using EasyModbus;
 using Sharp7;
+using NModbus;
 
 
 namespace LoveMeDo
@@ -27,16 +28,16 @@ namespace LoveMeDo
             InitializeComponent();
             Console.SetOut(new OutRedirect(boxConsoleOutput));
             buttonModbusExecute.IsEnabled = false;
-            conn_check = new Thread(ConnectionCheck)
+            conn_check = new Thread(MbusConnectionCheck)
             {
                 IsBackground = true
             };
-            boxModbusOp.SelectionChanged += new SelectionChangedEventHandler(OnModbusSelChanged);
+            boxModbusOp.SelectionChanged += new SelectionChangedEventHandler(OnMbusSelChanged);
             sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
         // Modbus section handlers
-        public void OnModbusSelChanged(object sender, EventArgs e)
+        public void OnMbusSelChanged(object sender, EventArgs e)
         {
             // Deactivate write controls
             if (boxModbusOp.SelectedIndex >= 0 && boxModbusOp.SelectedIndex <= 3)
@@ -51,15 +52,15 @@ namespace LoveMeDo
             }
         }
 
-        private void ConnectionCheck()
+        private void MbusConnectionCheck()
         {
             while (client.Connected) { Thread.Sleep(1000); }
             if (!manual_dc)
             {
                 Dispatcher.Invoke(() => {
                     Console.WriteLine("Connection dropped");
-                    buttonModbusStart.Click += OnButtonConnectClicked;
-                    buttonModbusStart.Click -= OnButtonDisconnectClicked;
+                    buttonModbusStart.Click += OnButtonMbusConnectClicked;
+                    buttonModbusStart.Click -= OnButtonMbusDisconnectClicked;
                     buttonModbusStart.Content = "Connect";
                     boxModbusIP.IsEnabled = true;
                     boxModbusPort.IsEnabled = true;
@@ -68,7 +69,7 @@ namespace LoveMeDo
             }
         }
 
-        public void OnButtonConnectClicked(object sender, RoutedEventArgs e)
+        public void OnButtonMbusConnectClicked(object sender, RoutedEventArgs e)
         {
             ip_addr = boxModbusIP.Text;
             port = int.Parse(boxModbusPort.Text);
@@ -89,8 +90,8 @@ namespace LoveMeDo
             {
                 labelLab2CStatus.Content = "Состояние: Соединен с " + ip_addr;
                 Console.WriteLine("Соединен с " + ip_addr + ":" + port.ToString());
-                buttonModbusStart.Click -= OnButtonConnectClicked;
-                buttonModbusStart.Click += OnButtonDisconnectClicked;
+                buttonModbusStart.Click -= OnButtonMbusConnectClicked;
+                buttonModbusStart.Click += OnButtonMbusDisconnectClicked;
                 buttonModbusStart.Content = "Отсоединить";
                 boxModbusIP.IsEnabled = false;
                 boxModbusPort.IsEnabled = false;
@@ -100,7 +101,7 @@ namespace LoveMeDo
             }
         }
 
-        public void OnButtonDisconnectClicked(object sender, RoutedEventArgs e)
+        public void OnButtonMbusDisconnectClicked(object sender, RoutedEventArgs e)
         {
             if (client.Connected)
             {
@@ -108,8 +109,8 @@ namespace LoveMeDo
                 client.Disconnect();
                 labelLab2CStatus.Content = "Состояние: Нет соединения";
                 Console.WriteLine("Отключен от " + ip_addr);
-                buttonModbusStart.Click += OnButtonConnectClicked;
-                buttonModbusStart.Click -= OnButtonDisconnectClicked;
+                buttonModbusStart.Click += OnButtonMbusConnectClicked;
+                buttonModbusStart.Click -= OnButtonMbusDisconnectClicked;
                 buttonModbusStart.Content = "Соединить";
                 boxModbusIP.IsEnabled = true;
                 boxModbusPort.IsEnabled = true;
@@ -117,7 +118,7 @@ namespace LoveMeDo
             }
         }
 
-        public void OnExecuteButtonClicked(object sender, RoutedEventArgs e)
+        public void OnButtonMbusExecuteClicked(object sender, RoutedEventArgs e)
         {
             if (client.Connected)
             {
