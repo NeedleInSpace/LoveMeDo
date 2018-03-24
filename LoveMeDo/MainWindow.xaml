@@ -17,7 +17,7 @@
                     <TextBox x:Name="boxModbusSendIP" HorizontalAlignment="Left" Height="33" Margin="10,52,0,0" TextWrapping="Wrap" Text="0.0.0.0" VerticalAlignment="Top" Width="140" FontSize="16"/>
                     <Label Content="Порт назначения" HorizontalAlignment="Left" Margin="10,91,0,0" VerticalAlignment="Top" Height="35" Width="140" FontSize="16"/>
                     <TextBox x:Name="boxModbusSendPort" HorizontalAlignment="Left" Height="33" Margin="10,133,0,0" TextWrapping="Wrap" Text="502" VerticalAlignment="Top" Width="140" FontSize="16"/>
-                    <Button x:Name="buttonModbusSend" Click="OnSendButtonClicked" Content="Отправить" HorizontalAlignment="Left" Margin="231,91,0,0" VerticalAlignment="Top" Width="362" Height="75" FontSize="48"/>
+                    <Button x:Name="buttonModbusSend" Click="OnButtonSendRawClicked" Content="Отправить" HorizontalAlignment="Left" Margin="231,91,0,0" VerticalAlignment="Top" Width="362" Height="75" FontSize="48"/>
                     <Label Content="Данные для отправки (HEX)" HorizontalAlignment="Left" Margin="231,10,0,0" VerticalAlignment="Top" Height="35" Width="242" FontSize="16"/>
                     <TextBox x:Name="boxModbusSendData" HorizontalAlignment="Left" Height="33" Margin="231,52,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="362" FontSize="16"/>
                 </Grid>
