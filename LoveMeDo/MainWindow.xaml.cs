@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Linq;
 using System.Net.Sockets;
-using EasyModbus;
 using Sharp7;
 using NModbus;
 
@@ -15,7 +14,9 @@ namespace LoveMeDo
 {
     public partial class MainWindow : Window
     {
-        ModbusClient client;
+        ModbusFactory mbus_factory;
+        TcpClient mbus_client;
+        IModbusMaster mbus_master;
         S7Client s7client;
         Socket sock;
         Thread conn_check;
@@ -33,6 +34,7 @@ namespace LoveMeDo
                 IsBackground = true
             };
             boxModbusOp.SelectionChanged += new SelectionChangedEventHandler(OnMbusSelChanged);
+            mbus_factory = new ModbusFactory();
             sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
@@ -54,7 +56,7 @@ namespace LoveMeDo
 
         private void MbusConnectionCheck()
         {
-            while (client.Connected) { Thread.Sleep(1000); }
+            while (mbus_client.Connected) { Thread.Sleep(1000); }
             if (!manual_dc)
             {
                 Dispatcher.Invoke(() => {
@@ -73,20 +75,21 @@ namespace LoveMeDo
         {
             ip_addr = boxModbusIP.Text;
             port = int.Parse(boxModbusPort.Text);
-            client = new ModbusClient(ip_addr, port);
-
+            mbus_client = new TcpClient();
+            mbus_master = mbus_factory.CreateMaster(mbus_client);
+            
             try
             {
                 Console.WriteLine("Соединяю с " + ip_addr + " ...");
-                client.Connect();
+                mbus_client.Connect(ip_addr, port);
             }
-            catch (EasyModbus.Exceptions.ConnectionException)
+            catch (SocketException)
             {
                 Console.WriteLine("Соединение с " + ip_addr + " прервано");
                 labelLab2CStatus.Content = "Состояние: Ошибка соединения";
             }
             
-            if (client.Connected)
+            if (mbus_client.Connected)
             {
                 labelLab2CStatus.Content = "Состояние: Соединен с " + ip_addr;
                 Console.WriteLine("Соединен с " + ip_addr + ":" + port.ToString());
@@ -103,10 +106,10 @@ namespace LoveMeDo
 
         public void OnButtonMbusDisconnectClicked(object sender, RoutedEventArgs e)
         {
-            if (client.Connected)
+            if (mbus_client.Connected)
             {
                 manual_dc = true;
-                client.Disconnect();
+                mbus_client.Close();
                 labelLab2CStatus.Content = "Состояние: Нет соединения";
                 Console.WriteLine("Отключен от " + ip_addr);
                 buttonModbusStart.Click += OnButtonMbusConnectClicked;
@@ -120,26 +123,27 @@ namespace LoveMeDo
 
         public void OnButtonMbusExecuteClicked(object sender, RoutedEventArgs e)
         {
-            if (client.Connected)
+            if (mbus_client.Connected)
             {
-                int offset = int.Parse(boxRegOffset.Text);
-                int quantity = int.Parse(boxRegNumber.Text);
-                int val = int.Parse(boxModbusWriteValue.Text);
+                ushort offset = ushort.Parse(boxRegOffset.Text);
+                ushort quantity = ushort.Parse(boxRegNumber.Text);
+                byte slave = 0x01;
+                ushort val = ushort.Parse(boxModbusWriteValue.Text);
                 switch (boxModbusOp.Text)
                 {
                     case "Read discrete inputs":
                         bool[] discrete_output;
                         try
                         {
-                            discrete_output = client.ReadDiscreteInputs(offset, quantity);
+                            discrete_output = mbus_master.ReadInputs(slave, offset, quantity);
                         }
                         catch (IOException)
                         {
                             Console.WriteLine("Ошибка соединения. Соединение сброшено");
-                            client.Disconnect();
+                            mbus_client.Close();
                             discrete_output = new bool[0];
                         }
-                        catch (EasyModbus.Exceptions.ModbusException)
+                        catch (InvalidModbusRequestException)
                         {
                             Console.WriteLine("Что-то пошло не так...");
                             discrete_output = new bool[0];
@@ -155,15 +159,15 @@ namespace LoveMeDo
                         bool[] coil_output;
                         try
                         {
-                            coil_output = client.ReadCoils(offset, quantity);
+                            coil_output = mbus_master.ReadCoils(slave, offset, quantity);
                         }
                         catch (IOException)
                         {
                             Console.WriteLine("Ошибка соединения. Соединение сброшено");
-                            client.Disconnect();
+                            mbus_client.Close();
                             coil_output = new bool[0];
                         }
-                        catch (EasyModbus.Exceptions.ModbusException)
+                        catch (InvalidModbusRequestException)
                         {
                             Console.WriteLine("Что-то пошло не так...");
                             coil_output = new bool[0];
@@ -176,22 +180,22 @@ namespace LoveMeDo
                         Console.Write('\n');
                         break;
                     case "Read holding registers":
-                        int[] holding_output;
+                        ushort[] holding_output;
 
                         try
                         {
-                            holding_output = client.ReadHoldingRegisters(offset, quantity);
+                            holding_output = mbus_master.ReadHoldingRegisters(slave, offset, quantity);
                         }
                         catch (IOException)
                         {
                             Console.WriteLine("Ошибка соединения. Соединение сброшено");
-                            client.Disconnect();
-                            holding_output = new int[0];
+                            mbus_client.Close();
+                            holding_output = new ushort[0];
                         }
-                        catch (EasyModbus.Exceptions.ModbusException)
+                        catch (InvalidModbusRequestException)
                         {
                             Console.WriteLine("Что-то пошло не так...");
-                            holding_output = new int[0];
+                            holding_output = new ushort[0];
                         }
                         foreach (int i in holding_output)
                         {
@@ -200,22 +204,22 @@ namespace LoveMeDo
                         Console.WriteLine("");
                         break;
                     case "Read input registers":
-                        int[] inreg_output;
+                        ushort[] inreg_output;
 
                         try
                         {
-                            inreg_output = client.ReadInputRegisters(offset, quantity);
+                            inreg_output = mbus_master.ReadInputRegisters(slave, offset, quantity);
                         }
                         catch (IOException)
                         {
                             Console.WriteLine("Ошибка соединения. Соединение сброшено");
-                            client.Disconnect();
-                            inreg_output = new int[0];
+                            mbus_client.Close();
+                            inreg_output = new ushort[0];
                         }
-                        catch (EasyModbus.Exceptions.ModbusException)
+                        catch (InvalidModbusRequestException)
                         {
                             Console.WriteLine("Что-то пошло не так...");
-                            inreg_output = new int[0];
+                            inreg_output = new ushort[0];
                         }
                         foreach (int i in inreg_output)
                         {
@@ -228,15 +232,15 @@ namespace LoveMeDo
                         bool coil = val > 0 ? true : false;
                         try
                         {
-                            client.WriteSingleCoil(offset, coil);
+                            mbus_master.WriteSingleCoil(slave, offset, coil);
                             Console.WriteLine("ЗАП OK");
                         }
                         catch (IOException)
                         {
                             Console.WriteLine("Ошибка соединения. Соединение сброшено");
-                            client.Disconnect();
+                            mbus_client.Close();
                         }
-                        catch (EasyModbus.Exceptions.ModbusException)
+                        catch (InvalidModbusRequestException)
                         {
                             Console.WriteLine("Что-то пошло не так...");
                         }
@@ -244,15 +248,15 @@ namespace LoveMeDo
                     case "Write single register":
                         try
                         {
-                            client.WriteSingleRegister(offset, val);
+                            mbus_master.WriteSingleRegister(slave, offset, val);
                             Console.WriteLine("ЗАП OK");
                         }
                         catch (IOException)
                         {
                             Console.WriteLine("Ошибка соединения. Соединение сброшено");
-                            client.Disconnect();
+                            mbus_client.Close();
                         }
-                        catch (EasyModbus.Exceptions.ModbusException)
+                        catch (InvalidModbusRequestException)
                         {
                             Console.WriteLine("Что-то пошло не так...");
                         }
@@ -265,51 +269,51 @@ namespace LoveMeDo
                         }
                         try
                         {
-                            client.WriteMultipleCoils(offset, coil_input);
+                            mbus_master.WriteMultipleCoils(slave, offset, coil_input);
                             Console.WriteLine("ЗАП OK");
                         }
                         catch (IOException)
                         {
                             Console.WriteLine("Ошибка соединения. Соединение сброшено");
-                            client.Disconnect();
+                            mbus_client.Close();
                         }
-                        catch (EasyModbus.Exceptions.ModbusException)
+                        catch (InvalidModbusRequestException)
                         {
                             Console.WriteLine("Что-то пошло не так...");
                         }
                         break;
                     case "Write multiple registers":
-                        int[] reg_out = new int[quantity];
+                        ushort[] reg_out = new ushort[quantity];
                         for (int i = 0; i < quantity; i++)
                         {
                             reg_out[0] = val;
                         }
                         try
                         {
-                            client.WriteMultipleRegisters(offset, reg_out);
+                            mbus_master.WriteMultipleRegisters(slave, offset, reg_out);
                             Console.WriteLine("ЗАП OK");
                         }
                         catch (IOException)
                         {
                             Console.WriteLine("Ошибка соединения. Соединение сброшено");
-                            client.Disconnect();
+                            mbus_client.Close();
                         }
-                        catch (EasyModbus.Exceptions.ModbusException)
+                        catch (InvalidModbusRequestException)
                         {
                             Console.WriteLine("Что-то пошло не так...");
                         }
                         break;
                     case "R/W multiple registers":
-                        int[] reg_write = new int[quantity];
-                        int[] reg_read;
-                        int offset_write = int.Parse(boxRegOffsetWr.Text);
+                        ushort[] reg_write = new ushort[quantity];
+                        ushort[] reg_read;
+                        ushort offset_write = ushort.Parse(boxRegOffsetWr.Text);
                         for (int i = 0; i < quantity; i++)
                         {
                             reg_write[i] = val;
                         }
                         try
                         {
-                            reg_read = client.ReadWriteMultipleRegisters(offset, quantity, offset_write, reg_write);
+                            reg_read = mbus_master.ReadWriteMultipleRegisters(slave, offset, quantity, offset_write, reg_write);
                             Console.WriteLine("ЧТЕН OK");
                             foreach (int i in reg_read)
                             {
@@ -320,18 +324,11 @@ namespace LoveMeDo
                         catch (IOException)
                         {
                             Console.WriteLine("Ошибка соединения. Соединение сброшено");
-                            client.Disconnect();
+                            mbus_client.Close();
                         }
-                        catch (EasyModbus.Exceptions.ModbusException ex)
+                        catch (InvalidModbusRequestException ex)
                         {
-                            if (ex is EasyModbus.Exceptions.FunctionCodeNotSupportedException)
-                            {
-                                Console.WriteLine("Функция не поддерживается");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Что-то пошло не так...");
-                            }
+                            Console.WriteLine("Что-то пошло не так...");
                         }
                         break;
                 }
@@ -339,7 +336,7 @@ namespace LoveMeDo
         }
 
         // Raw data send section
-        public void OnSendButtonClicked(object sender, RoutedEventArgs e)
+        public void OnButtonSendRawClicked(object sender, RoutedEventArgs e)
         {
             string ip_addr = boxModbusSendIP.Text;
             int port = int.Parse(boxModbusSendPort.Text);
