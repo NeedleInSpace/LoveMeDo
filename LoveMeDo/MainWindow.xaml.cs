@@ -29,6 +29,8 @@ namespace LoveMeDo
             InitializeComponent();
             Console.SetOut(new OutRedirect(boxConsoleOutput));
             buttonModbusExecute.IsEnabled = false;
+            buttonS7Run.IsEnabled = false;
+            buttonS7Stop.IsEnabled = false;
             conn_check = new Thread(MbusConnectionCheck)
             {
                 IsBackground = true
@@ -56,7 +58,7 @@ namespace LoveMeDo
 
         private void MbusConnectionCheck()
         {
-            while (mbus_client.Connected) { Thread.Sleep(1000); }
+            while (mbus_client.Connected) { Thread.Sleep(500); }
             if (!manual_dc)
             {
                 Dispatcher.Invoke(() => {
@@ -397,6 +399,13 @@ namespace LoveMeDo
                 buttonS7Connect.Click -= OnButtonS7ConnectClicked;
                 buttonS7Connect.Click += OnButtonS7DisconnectClicked;
                 buttonS7Connect.Content = "Отсоединить";
+                int status = 0;
+                s7client.PlcGetStatus(ref status);
+                if (status == S7Consts.S7CpuStatusRun)
+                {
+                    buttonS7Run.IsEnabled = false;
+                    buttonS7Stop.IsEnabled = true;
+                }
                 
             }
             catch
@@ -417,6 +426,36 @@ namespace LoveMeDo
             }
         }
 
+
+        public void OnButtonS7RunClicked(object sender, RoutedEventArgs e)
+        {
+            int status = 0;
+            if (s7client.Connected)
+            {
+                s7client.PlcGetStatus(ref status);
+                if (status == S7Consts.S7CpuStatusRun)
+                {
+                    s7client.PlcHotStart();
+                    buttonS7Run.IsEnabled = false;
+                    buttonS7Stop.IsEnabled = true;
+                }
+            }
+        }
+
+        public void OnButtonS7StopClicked(object sender, RoutedEventArgs e)
+        {
+            int status = 0;
+            if (s7client.Connected)
+            {
+                s7client.PlcGetStatus(ref status);
+                if (status == S7Consts.S7CpuStatusStop)
+                {
+                    s7client.PlcStop();
+                    buttonS7Run.IsEnabled = true;
+                    buttonS7Stop.IsEnabled = false;
+                }
+            }
+        }
 
         // Split whitespace separated string into byte array
         public static byte[] GetBytes(string value)
