@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Threading.Tasks;
 using System.Linq;
 using System.Net.Sockets;
 using Sharp7;
@@ -394,19 +395,29 @@ namespace LoveMeDo
             
             try
             {
-                s7client.ConnectTo(ip_addr, rack, slot);
-                Console.WriteLine("Соединен с " + ip_addr);
-                buttonS7Connect.Click -= OnButtonS7ConnectClicked;
-                buttonS7Connect.Click += OnButtonS7DisconnectClicked;
-                buttonS7Connect.Content = "Отсоединить";
-                int status = 0;
-                s7client.PlcGetStatus(ref status);
-                if (status == S7Consts.S7CpuStatusRun)
+                if (s7client.ConnectTo(ip_addr, rack, slot) == 0)
                 {
-                    buttonS7Run.IsEnabled = false;
-                    buttonS7Stop.IsEnabled = true;
+                    Console.WriteLine("Соединен с " + ip_addr);
+                    buttonS7Connect.Click -= OnButtonS7ConnectClicked;
+                    buttonS7Connect.Click += OnButtonS7DisconnectClicked;
+                    buttonS7Connect.Content = "Отсоединить";
+                    int status = 0;
+                    s7client.PlcGetStatus(ref status);
+                    if (status == S7Consts.S7CpuStatusRun)
+                    {
+                        buttonS7Run.IsEnabled = false;
+                        buttonS7Stop.IsEnabled = true;
+                    }
+                    else
+                    {
+                        buttonS7Run.IsEnabled = true;
+                        buttonS7Stop.IsEnabled = false;
+                    }
                 }
-                
+                else
+                {
+                    Console.WriteLine("Не могу соединить с" + ip_addr);
+                }
             }
             catch
             {
@@ -427,22 +438,7 @@ namespace LoveMeDo
         }
 
 
-        public void OnButtonS7RunClicked(object sender, RoutedEventArgs e)
-        {
-            int status = 0;
-            if (s7client.Connected)
-            {
-                s7client.PlcGetStatus(ref status);
-                if (status == S7Consts.S7CpuStatusRun)
-                {
-                    s7client.PlcHotStart();
-                    buttonS7Run.IsEnabled = false;
-                    buttonS7Stop.IsEnabled = true;
-                }
-            }
-        }
-
-        public void OnButtonS7StopClicked(object sender, RoutedEventArgs e)
+        public async void OnButtonS7RunClicked(object sender, RoutedEventArgs e)
         {
             int status = 0;
             if (s7client.Connected)
@@ -450,9 +446,106 @@ namespace LoveMeDo
                 s7client.PlcGetStatus(ref status);
                 if (status == S7Consts.S7CpuStatusStop)
                 {
+                    s7client.PlcHotStart();
+                    await Task.Delay(2000);
+                    s7client.PlcGetStatus(ref status);
+                    if (status != S7Consts.S7CpuStatusRun)
+                    {
+                        Console.WriteLine("ПЛК не запущен");
+                        return;
+                    }
+                    Console.WriteLine("ПЛК запущен");
+                    buttonS7Run.IsEnabled = false;
+                    buttonS7Stop.IsEnabled = true;
+                }
+            }
+        }
+
+        public async void OnButtonS7StopClicked(object sender, RoutedEventArgs e)
+        {
+            int status = 0;
+            if (s7client.Connected)
+            {
+                s7client.PlcGetStatus(ref status);
+                if (status == S7Consts.S7CpuStatusRun)
+                {
                     s7client.PlcStop();
-                    buttonS7Run.IsEnabled = true;
-                    buttonS7Stop.IsEnabled = false;
+                    await Task.Delay(500);
+                    s7client.PlcGetStatus(ref status);
+                    if (status == S7Consts.S7CpuStatusStop)
+                    {
+                        Console.WriteLine("ПЛК остановлен");
+                        buttonS7Run.IsEnabled = true;
+                        buttonS7Stop.IsEnabled = false;
+                    }
+                }
+            }
+        }
+
+        public void OnButtonS7PasswdSetClicked(object sender, RoutedEventArgs e)
+        {
+            string passwd = boxS7Passwd.Password;
+            if (s7client.Connected)
+            {
+                if (s7client.SetSessionPassword(passwd) == 0)
+                {
+                    buttonS7PasswdSet.Click -= OnButtonS7PasswdSetClicked;
+                    buttonS7PasswdSet.Click += OnButtonS7PasswdResetClicked;
+                    buttonS7PasswdSet.Content = "Сброс";
+                    Console.WriteLine("Пароль установлен");
+                }
+                else
+                {
+                    Console.WriteLine("Пароль не установлен");
+                }
+            }
+        }
+
+        public void OnButtonS7PasswdResetClicked(object sender, RoutedEventArgs e)
+        {
+            if (s7client.Connected)
+            {
+                if (s7client.ClearSessionPassword() == 0)
+                {
+                    buttonS7PasswdSet.Click += OnButtonS7PasswdSetClicked;
+                    buttonS7PasswdSet.Click -= OnButtonS7PasswdResetClicked;
+                    buttonS7PasswdSet.Content = "Установить";
+                    Console.WriteLine("Пароль сброшен");
+                }
+                else
+                {
+                    Console.WriteLine("Пароль не сброшен");
+                }
+            }
+        }
+
+        public void OnButtonS7SecurityStatusGetClicked(object sender, RoutedEventArgs e)
+        {
+            if (s7client.Connected)
+            {
+                S7Client.S7Protection lvl = new S7Client.S7Protection();
+                s7client.GetProtection(ref lvl);
+                Console.WriteLine("УР ЗАЩ: " + lvl.sch_schal + "\nУР ПАР ЗАЩ: " + lvl.sch_par + "\nУР ЗАЩ ЦП: " + lvl.sch_rel);
+            }
+        }
+
+        public void OnButtonS7GetCPUStatusClicked(object sender, RoutedEventArgs e)
+        {
+            if (s7client.Connected)
+            {
+                int status = 0;
+                s7client.PlcGetStatus(ref status);
+                if (status == S7Consts.S7CpuStatusRun)
+                {
+                    Console.WriteLine("ЦП Запущен");
+                }
+                else if (status == S7Consts.S7CpuStatusStop)
+                {
+                    Console.WriteLine("ЦП Остановлен");
+                }
+                else
+                {
+                    Console.WriteLine("Неизвестный статус ЦП");
                 }
             }
         }

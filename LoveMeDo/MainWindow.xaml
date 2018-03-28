@@ -52,15 +52,21 @@
             </TabItem>
             <TabItem x:Name="tabLab3" Header="Industrial Ethernet" Margin="0">
                 <Grid Background="#FFE5E5E5" Margin="0">
-                    <TextBox x:Name="boxS7Ip" HorizontalAlignment="Left" Height="23" Margin="10,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="82" Text="0.0.0.0"/>
+                    <TextBox x:Name="boxS7Ip" HorizontalAlignment="Left" Height="23" Margin="10,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="97" Text="0.0.0.0"/>
                     <Label Content="IP адрес" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                    <Button x:Name="buttonS7Connect" Click="OnButtonS7ConnectClicked" Content="Соединить" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Width="182"/>
-                    <TextBox x:Name="boxS7Rack" HorizontalAlignment="Left" Height="23" Margin="97,41,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45"/>
-                    <TextBox x:Name="boxS7Slot" HorizontalAlignment="Left" Height="23" Margin="147,41,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45"/>
-                    <Label Content="Rack" HorizontalAlignment="Left" Margin="97,10,0,0" VerticalAlignment="Top"/>
-                    <Label Content="Slot" HorizontalAlignment="Left" Margin="147,10,0,0" VerticalAlignment="Top"/>
-                    <Button x:Name="buttonS7Run" Content="ЗАПУСК" Click="OnButtonS7RunClicked" HorizontalAlignment="Left" Margin="10,94,0,0" VerticalAlignment="Top" Width="90"/>
-                    <Button x:Name="buttonS7Stop" Content="СТОП" Click="OnButtonS7StopClicked" HorizontalAlignment="Left" Margin="105,94,0,0" VerticalAlignment="Top" Width="87"/>
+                    <Button x:Name="buttonS7Connect" Click="OnButtonS7ConnectClicked" Content="Соединить" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Width="197"/>
+                    <TextBox x:Name="boxS7Rack" HorizontalAlignment="Left" Height="23" Margin="112,41,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45"/>
+                    <TextBox x:Name="boxS7Slot" HorizontalAlignment="Left" Height="23" Margin="162,41,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="45"/>
+                    <Label Content="Rack" HorizontalAlignment="Left" Margin="112,10,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Slot" HorizontalAlignment="Left" Margin="162,10,0,0" VerticalAlignment="Top"/>
+                    <Button x:Name="buttonS7Run" Content="ЗАПУСК" Click="OnButtonS7RunClicked" HorizontalAlignment="Left" Margin="10,94,0,0" VerticalAlignment="Top" Width="97" Background="#FF82D87E"/>
+                    <Button x:Name="buttonS7Stop" Content="СТОП" Click="OnButtonS7StopClicked" HorizontalAlignment="Left" Margin="112,94,0,0" VerticalAlignment="Top" Width="95" Background="#FFF17C7C"/>
+                    <Label Content="Пароль" HorizontalAlignment="Left" Margin="212,10,0,0" VerticalAlignment="Top"/>
+                    <Button x:Name="buttonS7PasswdSet" Click="OnButtonS7PasswdSetClicked" Content="Установить" HorizontalAlignment="Left" Margin="212,69,0,0" VerticalAlignment="Top" Width="120"/>
+                    <PasswordBox x:Name="boxS7Passwd" HorizontalAlignment="Left" Margin="212,41,0,0" VerticalAlignment="Top" Height="23" Width="120"/>
+                    <Button x:Name="buttonS7CPUStatus" Click="OnButtonS7GetCPUStatusClicked" Content="CPU Status" HorizontalAlignment="Left" Margin="10,119,0,0" VerticalAlignment="Top" Width="97"/>
+                    <Button x:Name="buttonS7CPUInfo" Content="CPU Info" HorizontalAlignment="Left" Margin="112,119,0,0" VerticalAlignment="Top" Width="95"/>
+                    <Button x:Name="buttonS7SecStatus" Click="OnButtonS7SecurityStatusGetClicked" Content="Security status" HorizontalAlignment="Left" Margin="212,94,0,0" VerticalAlignment="Top" Width="120"/>
 
                 </Grid>
             </TabItem>
