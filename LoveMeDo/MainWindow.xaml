@@ -65,7 +65,7 @@
                     <Button x:Name="buttonS7PasswdSet" Click="OnButtonS7PasswdSetClicked" Content="Установить" HorizontalAlignment="Left" Margin="212,69,0,0" VerticalAlignment="Top" Width="120"/>
                     <PasswordBox x:Name="boxS7Passwd" HorizontalAlignment="Left" Margin="212,41,0,0" VerticalAlignment="Top" Height="23" Width="120"/>
                     <Button x:Name="buttonS7CPUStatus" Click="OnButtonS7GetCPUStatusClicked" Content="CPU Status" HorizontalAlignment="Left" Margin="10,119,0,0" VerticalAlignment="Top" Width="97"/>
-                    <Button x:Name="buttonS7CPUInfo" Content="CPU Info" HorizontalAlignment="Left" Margin="112,119,0,0" VerticalAlignment="Top" Width="95"/>
+                    <Button x:Name="buttonS7CPUInfo" Click="OnButtonS7GetCPUInfoClicked" Content="CPU Info" HorizontalAlignment="Left" Margin="112,119,0,0" VerticalAlignment="Top" Width="95"/>
                     <Button x:Name="buttonS7SecStatus" Click="OnButtonS7SecurityStatusGetClicked" Content="Security status" HorizontalAlignment="Left" Margin="212,94,0,0" VerticalAlignment="Top" Width="120"/>
 
                 </Grid>

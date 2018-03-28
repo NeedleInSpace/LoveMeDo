@@ -550,6 +550,21 @@ namespace LoveMeDo
             }
         }
 
+        public void OnButtonS7GetCPUInfoClicked(object sender, RoutedEventArgs e)
+        {
+            if (s7client.Connected)
+            {
+                S7Client.S7CpuInfo info = new S7Client.S7CpuInfo();
+                s7client.GetCpuInfo(ref info);
+                
+                Console.WriteLine(info.ModuleTypeName);
+                Console.WriteLine(info.SerialNumber);
+                Console.WriteLine(info.ASName);
+                Console.WriteLine(info.Copyright);
+                Console.WriteLine(info.ModuleName);
+            }
+        }
+
         // Split whitespace separated string into byte array
         public static byte[] GetBytes(string value)
         {
