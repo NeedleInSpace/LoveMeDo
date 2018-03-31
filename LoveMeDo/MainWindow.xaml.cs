@@ -565,6 +565,29 @@ namespace LoveMeDo
             }
         }
 
+        public void OnButtonS7GetDateClicked(object sender, RoutedEventArgs e)
+        {
+            if (s7client.Connected)
+            {
+                DateTime d = DateTime.Now;
+                s7client.GetPlcDateTime(ref d);
+
+                Console.WriteLine(d);
+            }
+        }
+
+        public void OnButtonS7DBReadClicked(object sender, RoutedEventArgs e)
+        {
+            if (s7client.Connected)
+            {
+                int dbno = 0, offset = 0, size = 16;
+                byte[] buffer = new byte[size];
+                s7client.DBRead(dbno, offset, size, buffer);
+                Console.WriteLine(buffer.ToString());
+            }
+        }
+
+
         // Split whitespace separated string into byte array
         public static byte[] GetBytes(string value)
         {
