@@ -576,12 +576,13 @@ namespace LoveMeDo
             }
         }
 
-        public void OnButtonS7DBReadClicked(object sender, RoutedEventArgs e)
+        public void OnButtonS7ReadClicked(object sender, RoutedEventArgs e)
         {
             if (s7client.Connected)
             {
                 int dbno = 0, offset = 0, size = 16;
                 byte[] buffer = new byte[size];
+                s7client.ReadArea(S7Consts.S7AreaDB, dbno, offset, size, 0x02, buffer);
                 s7client.DBRead(dbno, offset, size, buffer);
                 Console.WriteLine(buffer.ToString());
             }
