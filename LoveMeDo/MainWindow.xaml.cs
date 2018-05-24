@@ -32,6 +32,12 @@ namespace LoveMeDo
             buttonModbusExecute.IsEnabled = false;
             buttonS7Run.IsEnabled = false;
             buttonS7Stop.IsEnabled = false;
+            buttonS7CPUDate.IsEnabled = false;
+            buttonS7CPUInfo.IsEnabled = false;
+            buttonS7CPUStatus.IsEnabled = false;
+            buttonS7PasswdSet.IsEnabled = false;
+            buttonS7SecStatus.IsEnabled = false;
+            buttonS7SendReq.IsEnabled = false;
             conn_check = new Thread(MbusConnectionCheck)
             {
                 IsBackground = true
@@ -413,15 +419,22 @@ namespace LoveMeDo
                         buttonS7Run.IsEnabled = true;
                         buttonS7Stop.IsEnabled = false;
                     }
+
+                    buttonS7CPUDate.IsEnabled = true;
+                    buttonS7CPUInfo.IsEnabled = true;
+                    buttonS7CPUStatus.IsEnabled = true;
+                    buttonS7PasswdSet.IsEnabled = true;
+                    buttonS7SecStatus.IsEnabled = true;
+                    buttonS7SendReq.IsEnabled = true;
                 }
                 else
                 {
-                    Console.WriteLine("Не могу соединить с" + ip_addr);
+                    Console.WriteLine("Не могу соединить с " + ip_addr);
                 }
             }
             catch
             {
-                Console.WriteLine("Не могу соединить с" + ip_addr);
+                Console.WriteLine("Не могу соединить с " + ip_addr);
             }
         }
 
@@ -434,6 +447,16 @@ namespace LoveMeDo
                 buttonS7Connect.Click += OnButtonS7ConnectClicked;
                 buttonS7Connect.Click -= OnButtonS7DisconnectClicked;
                 buttonS7Connect.Content = "Соединить";
+
+                buttonS7Run.IsEnabled = false;
+                buttonS7Stop.IsEnabled = false;
+                buttonS7CPUDate.IsEnabled = false;
+                buttonS7CPUInfo.IsEnabled = false;
+                buttonS7CPUStatus.IsEnabled = false;
+                buttonS7PasswdSet.IsEnabled = false;
+                buttonS7SecStatus.IsEnabled = false;
+                buttonS7SendReq.IsEnabled = false;
+
             }
         }
 
@@ -588,6 +611,90 @@ namespace LoveMeDo
             }
         }
 
+        public void OnButtonS7SendReqClicked(object sender, RoutedEventArgs e)
+        {
+            if (s7client.Connected)
+            {
+                int dbno = int.Parse(boxS7DBno.Text);
+                int offset = int.Parse(boxS7Offset.Text);
+                int size = int.Parse(boxS7Amount.Text);
+                int area = 0, type = 0;
+
+                switch (listS7Area.Text)
+                {
+                    case "Process Inputs":
+                        area = S7Consts.S7AreaPE;
+                        break;
+                    case "Process Outputs":
+                        area = S7Consts.S7AreaPA;
+                        break;
+                    case "Merkers":
+                        area = S7Consts.S7AreaMK;
+                        break;
+                    case "DB":
+                        area = S7Consts.S7AreaDB;
+                        break;
+                    case "Counters":
+                        area = S7Consts.S7AreaCT;
+                        break;
+                    case "Timers":
+                        area = S7Consts.S7AreaTM;
+                        break;
+                    default:
+                        area = 0;
+                        break;
+                }
+                switch (listS7DataType.Text)
+                {
+                    case "Bit":
+                        type = S7Consts.S7WLBit;
+                        break;
+                    case "Byte":
+                        type = S7Consts.S7WLByte;
+                        break;
+                    case "Char":
+                        type = S7Consts.S7WLChar;
+                        break;
+                    case "Int":
+                        type = S7Consts.S7WLInt;
+                        break;
+                    case "Word":
+                        type = S7Consts.S7WLWord;
+                        break;
+                    case "DWord":
+                        type = S7Consts.S7WLDWord;
+                        break;
+                    case "Real":
+                        type = S7Consts.S7WLReal;
+                        break;
+                    case "Counter":
+                        type = S7Consts.S7WLCounter;
+                        break;
+                    case "Timer":
+                        type = S7Consts.S7WLTimer;
+                        break;
+                    default:
+                        type = 0;
+                        break;
+                }
+
+                switch(listS7FnName.Text)
+                {
+                    case "Запись в память":
+
+                        break;
+                    case "Чтение из памяти":
+                        byte[] buffer = new byte[size];
+                        s7client.ReadArea(area, dbno, offset, size, type, buffer);
+                        Console.WriteLine(buffer.ToString());
+                        break;
+                    case "Чтение блока данных":
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
 
         // Split whitespace separated string into byte array
         public static byte[] GetBytes(string value)

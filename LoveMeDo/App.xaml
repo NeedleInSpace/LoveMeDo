@@ -6,15 +6,40 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <x:Array x:Key="comboModbusFn" Type="sys:String">
-            <sys:String>Read discrete inputs</sys:String>
-            <sys:String>Read coils</sys:String>
-            <sys:String>Read holding registers</sys:String>
-            <sys:String>Read input registers</sys:String>
-            <sys:String>Write single coil</sys:String>
-            <sys:String>Write single register</sys:String>
-            <sys:String>Write multiple coil</sys:String>
-            <sys:String>Write multiple registers</sys:String>
-            <sys:String>R/W multiple registers</sys:String>
+            <sys:String>Чтение дискретных входов</sys:String>
+            <sys:String>Чтение дискретных выходов</sys:String>
+            <sys:String>Чтение выходных регистров</sys:String>
+            <sys:String>Чтение входных регистров</sys:String>
+            <sys:String>Запись в дискретный выход</sys:String>
+            <sys:String>Запись в регистр</sys:String>
+            <sys:String>Запись в несколько дискретных выходов</sys:String>
+            <sys:String>Запись в несколько регистров</sys:String>
+            <sys:String>Чтение/Запись в несколько регистров</sys:String>
+        </x:Array>
+        <x:Array x:Key="listS7Fns" Type="sys:String">
+            <sys:String>Запись в память</sys:String>
+            <sys:String>Чтение из памяти</sys:String>
+            <sys:String>Чтение блока данных</sys:String>
+        </x:Array>
+        <x:Array x:Key="listS7Types" Type="sys:String">
+            <sys:String>Bit</sys:String>
+            <sys:String>Byte</sys:String>
+            <sys:String>Char</sys:String>
+            <sys:String>Int</sys:String>
+            <sys:String>Word</sys:String>
+            <sys:String>DWord</sys:String>
+            <sys:String>Byte</sys:String>
+            <sys:String>Real</sys:String>
+            <sys:String>Counter</sys:String>
+            <sys:String>Timer</sys:String>
+        </x:Array>
+        <x:Array x:Key="listS7Areas" Type="sys:String">
+            <sys:String>Process Inputs</sys:String>
+            <sys:String>Process Outputs</sys:String>
+            <sys:String>Merkers</sys:String>
+            <sys:String>DB</sys:String>
+            <sys:String>Counters</sys:String>
+            <sys:String>Timers</sys:String>
         </x:Array>
     </Application.Resources>
 </Application>

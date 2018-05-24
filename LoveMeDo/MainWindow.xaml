@@ -68,6 +68,21 @@
                     <Button x:Name="buttonS7CPUInfo" Click="OnButtonS7GetCPUInfoClicked" Content="CPU Info" HorizontalAlignment="Left" Margin="112,119,0,0" VerticalAlignment="Top" Width="95"/>
                     <Button x:Name="buttonS7SecStatus" Click="OnButtonS7SecurityStatusGetClicked" Content="Security status" HorizontalAlignment="Left" Margin="212,94,0,0" VerticalAlignment="Top" Width="120"/>
                     <Button x:Name="buttonS7CPUDate" Click="OnButtonS7GetDateClicked" Content="CPU Date" HorizontalAlignment="Left" Margin="10,144,0,0" VerticalAlignment="Top" Width="97"/>
+                    <TextBox x:Name="boxS7Offset" HorizontalAlignment="Left" Height="23" Margin="403,99,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="72"/>
+                    <TextBox x:Name="boxS7DBno" HorizontalAlignment="Left" Height="23" Margin="365,99,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="32"/>
+                    <ComboBox x:Name="listS7FnName" HorizontalAlignment="Left" Margin="365,41,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{DynamicResource listS7Fns}" SelectedIndex="0"/>
+                    <ComboBox x:Name="listS7Area" HorizontalAlignment="Left" Margin="603,41,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{DynamicResource listS7Areas}" SelectedIndex="0"/>
+                    <TextBox x:Name="boxS7Amount" HorizontalAlignment="Left" Height="23" Margin="480,99,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="58"/>
+                    <ComboBox x:Name="listS7DataType" HorizontalAlignment="Left" Margin="490,41,0,0" VerticalAlignment="Top" Width="108" ItemsSource="{DynamicResource listS7Types}" SelectedIndex="0"/>
+                    <TextBox x:Name="boxS7WriteData" HorizontalAlignment="Left" Height="23" Margin="543,99,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
+                    <Button x:Name="buttonS7SendReq" Content="Отправить" HorizontalAlignment="Left" Margin="365,144,0,0" VerticalAlignment="Top" Width="75"/>
+                    <Label Content="Функция" HorizontalAlignment="Left" Margin="365,10,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Тип данных" HorizontalAlignment="Left" Margin="490,10,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Зона памяти" HorizontalAlignment="Left" Margin="603,10,0,0" VerticalAlignment="Top"/>
+                    <Label Content="DB#" HorizontalAlignment="Left" Margin="365,68,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Адрес" HorizontalAlignment="Left" Margin="402,68,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Кол-во" HorizontalAlignment="Left" Margin="480,68,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Данные" HorizontalAlignment="Left" Margin="543,68,0,0" VerticalAlignment="Top"/>
 
                 </Grid>
             </TabItem>
