@@ -75,7 +75,7 @@
                     <TextBox x:Name="boxS7Amount" HorizontalAlignment="Left" Height="23" Margin="480,99,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="58"/>
                     <ComboBox x:Name="listS7DataType" HorizontalAlignment="Left" Margin="490,41,0,0" VerticalAlignment="Top" Width="108" ItemsSource="{DynamicResource listS7Types}" SelectedIndex="0"/>
                     <TextBox x:Name="boxS7WriteData" HorizontalAlignment="Left" Height="23" Margin="543,99,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
-                    <Button x:Name="buttonS7SendReq" Content="Отправить" HorizontalAlignment="Left" Margin="365,144,0,0" VerticalAlignment="Top" Width="75"/>
+                    <Button x:Name="buttonS7SendReq" Click="OnButtonS7SendReqClicked" Content="Отправить" HorizontalAlignment="Left" Margin="365,144,0,0" VerticalAlignment="Top" Width="75"/>
                     <Label Content="Функция" HorizontalAlignment="Left" Margin="365,10,0,0" VerticalAlignment="Top"/>
                     <Label Content="Тип данных" HorizontalAlignment="Left" Margin="490,10,0,0" VerticalAlignment="Top"/>
                     <Label Content="Зона памяти" HorizontalAlignment="Left" Margin="603,10,0,0" VerticalAlignment="Top"/>

@@ -686,7 +686,7 @@ namespace LoveMeDo
                     case "Чтение из памяти":
                         byte[] buffer = new byte[size];
                         s7client.ReadArea(area, dbno, offset, size, type, buffer);
-                        Console.WriteLine(buffer.ToString());
+                        Console.WriteLine(ByteToString(buffer));
                         break;
                     case "Чтение блока данных":
                         break;
@@ -700,6 +700,11 @@ namespace LoveMeDo
         public static byte[] GetBytes(string value)
         {
             return value.Split(' ').Select(s => byte.Parse(s, System.Globalization.NumberStyles.HexNumber)).ToArray();
+        }
+
+        public static string ByteToString(byte[] bytes)
+        {
+            return BitConverter.ToString(bytes).Replace("-", " ");
         }
     }
 
