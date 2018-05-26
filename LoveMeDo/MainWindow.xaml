@@ -50,7 +50,7 @@
 
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tabLab3" Header="Industrial Ethernet" Margin="0">
+            <TabItem x:Name="tabLab3" Header="S7 Comm" Margin="0">
                 <Grid Background="#FFE5E5E5" Margin="0">
                     <TextBox x:Name="boxS7Ip" HorizontalAlignment="Left" Height="23" Margin="10,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="97" Text="0.0.0.0"/>
                     <Label Content="IP адрес" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
