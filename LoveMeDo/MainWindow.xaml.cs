@@ -136,11 +136,11 @@ namespace LoveMeDo
             {
                 ushort offset = ushort.Parse(boxRegOffset.Text);
                 ushort quantity = ushort.Parse(boxRegNumber.Text);
-                byte slave = 0x01;
+                byte slave = 0x00;
                 ushort val = ushort.Parse(boxModbusWriteValue.Text);
                 switch (boxModbusOp.Text)
                 {
-                    case "Read discrete inputs":
+                    case "Чтение дискретных входов":
                         bool[] discrete_output;
                         try
                         {
@@ -164,7 +164,7 @@ namespace LoveMeDo
                         }
                         Console.Write('\n');                        
                         break;
-                    case "Read coils":
+                    case "Чтение дискретных выходов":
                         bool[] coil_output;
                         try
                         {
@@ -188,7 +188,7 @@ namespace LoveMeDo
                         }
                         Console.Write('\n');
                         break;
-                    case "Read holding registers":
+                    case "Чтение выходных регистров":
                         ushort[] holding_output;
 
                         try
@@ -212,7 +212,7 @@ namespace LoveMeDo
                         }
                         Console.WriteLine("");
                         break;
-                    case "Read input registers":
+                    case "Чтение входных регистров":
                         ushort[] inreg_output;
 
                         try
@@ -236,7 +236,7 @@ namespace LoveMeDo
                         }
                         Console.WriteLine("");
                         break;
-                    case "Write single coil":
+                    case "Запись в дискретный выход":
 
                         bool coil = val > 0 ? true : false;
                         try
@@ -254,7 +254,7 @@ namespace LoveMeDo
                             Console.WriteLine("Что-то пошло не так...");
                         }
                         break;
-                    case "Write single register":
+                    case "Запись в регистр":
                         try
                         {
                             mbus_master.WriteSingleRegister(slave, offset, val);
@@ -270,7 +270,7 @@ namespace LoveMeDo
                             Console.WriteLine("Что-то пошло не так...");
                         }
                         break;
-                    case "Write multiple coil":
+                    case "Запись в несколько дискретных выходов":
                         bool[] coil_input = new bool[quantity];
                         for (int i = 0; i < quantity; i++)
                         {
@@ -291,7 +291,7 @@ namespace LoveMeDo
                             Console.WriteLine("Что-то пошло не так...");
                         }
                         break;
-                    case "Write multiple registers":
+                    case "Запись в несколько регистров":
                         ushort[] reg_out = new ushort[quantity];
                         for (int i = 0; i < quantity; i++)
                         {
@@ -312,7 +312,7 @@ namespace LoveMeDo
                             Console.WriteLine("Что-то пошло не так...");
                         }
                         break;
-                    case "R/W multiple registers":
+                    case "Чтение/Запись в несколько регистров":
                         ushort[] reg_write = new ushort[quantity];
                         ushort[] reg_read;
                         ushort offset_write = ushort.Parse(boxRegOffsetWr.Text);
