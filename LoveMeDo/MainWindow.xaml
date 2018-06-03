@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LoveMeDo"
         mc:Ignorable="d"
-        Title="LoveMeDo" Height="600" Width="800" Background="White" ResizeMode="NoResize">
+        Title="Исследование атак на сети АСУ ТП. Атакующий" Height="600" Width="800" Background="White" ResizeMode="NoResize">
     <Grid>
         <TabControl Margin="10,10,10,340">
             <TabItem x:Name="tabLab1" Header="Raw" Margin="0">

@@ -68,7 +68,8 @@ namespace LoveMeDo
             while (mbus_client.Connected) { Thread.Sleep(500); }
             if (!manual_dc)
             {
-                Dispatcher.Invoke(() => {
+                Dispatcher.Invoke(() =>
+                {
                     Console.WriteLine("Connection dropped");
                     buttonModbusStart.Click += OnButtonMbusConnectClicked;
                     buttonModbusStart.Click -= OnButtonMbusDisconnectClicked;
@@ -86,7 +87,7 @@ namespace LoveMeDo
             port = int.Parse(boxModbusPort.Text);
             mbus_client = new TcpClient();
             mbus_master = mbus_factory.CreateMaster(mbus_client);
-            
+
             try
             {
                 Console.WriteLine("Соединяю с " + ip_addr + " ...");
@@ -97,7 +98,7 @@ namespace LoveMeDo
                 Console.WriteLine("Соединение с " + ip_addr + " прервано");
                 labelLab2CStatus.Content = "Состояние: Ошибка соединения";
             }
-            
+
             if (mbus_client.Connected)
             {
                 labelLab2CStatus.Content = "Состояние: Соединен с " + ip_addr;
@@ -162,7 +163,7 @@ namespace LoveMeDo
                             if (b) Console.Write("1 ");
                             else Console.Write("0 ");
                         }
-                        Console.Write('\n');                        
+                        Console.Write('\n');
                         break;
                     case "Чтение дискретных выходов":
                         bool[] coil_output;
@@ -390,7 +391,7 @@ namespace LoveMeDo
             sock.Shutdown(SocketShutdown.Both);
 
         }
-        
+
         // S7 section handlers
         public void OnButtonS7ConnectClicked(object sender, RoutedEventArgs e)
         {
@@ -398,7 +399,7 @@ namespace LoveMeDo
             ip_addr = boxS7Ip.Text;
             int rack = int.Parse(boxS7Rack.Text);
             int slot = int.Parse(boxS7Slot.Text);
-            
+
             try
             {
                 if (s7client.ConnectTo(ip_addr, rack, slot) == 0)
@@ -578,13 +579,15 @@ namespace LoveMeDo
             if (s7client.Connected)
             {
                 S7Client.S7CpuInfo info = new S7Client.S7CpuInfo();
+                S7Client.S7OrderCode order = new S7Client.S7OrderCode();
                 s7client.GetCpuInfo(ref info);
-                
+                s7client.GetOrderCode(ref order);
                 Console.WriteLine(info.ModuleTypeName);
                 Console.WriteLine(info.SerialNumber);
                 Console.WriteLine(info.ASName);
                 Console.WriteLine(info.Copyright);
                 Console.WriteLine(info.ModuleName);
+                Console.WriteLine(order.Code);
             }
         }
 
@@ -678,17 +681,73 @@ namespace LoveMeDo
                         break;
                 }
 
-                switch(listS7FnName.Text)
+                switch (listS7FnName.Text)
                 {
                     case "Запись в память":
 
+                        if (type == S7Consts.S7WLInt)
+                        {
+                            byte[] bf = new byte[2];
+                            short data = short.Parse(boxS7WriteData.Text);
+                            S7.SetIntAt(bf, 0, data);
+                            s7client.WriteArea(area, dbno, offset, 1, type, bf);
+                        }
+                        else if (type == S7Consts.S7WLReal)
+                        {
+                            byte[] bf = new byte[4];
+                            float data = float.Parse(boxS7WriteData.Text);
+                            S7.SetRealAt(bf, 0, data);
+                            s7client.WriteArea(area, dbno, offset, 1, type, bf);
+                        }
+                        else
+                        {
+                            byte[] bytes = GetBytes(boxS7WriteData.Text);
+                            s7client.WriteArea(area, dbno, offset, size, type, bytes);
+                        }
                         break;
                     case "Чтение из памяти":
-                        byte[] buffer = new byte[size];
+                        byte[] buffer = new byte[240];
                         s7client.ReadArea(area, dbno, offset, size, type, buffer);
-                        Console.WriteLine(ByteToString(buffer));
+                        if (type == S7Consts.S7WLInt)
+                        {
+                            string outb = "";
+                            for (int i = 0; i < size; i++)
+                            {
+                                outb += S7.GetIntAt(buffer, i * 2) + " ";
+                            }
+                            Console.WriteLine(outb);
+                        }
+                        else if (type == S7Consts.S7WLReal)
+                        {
+                            string outb = "";
+                            for (int i = 0; i < size; i++)
+                            {
+                                outb += S7.GetRealAt(buffer, i * 4) + " ";
+                            }
+                            Console.WriteLine(outb);
+                        }
+                        else if (type == S7Consts.S7WLByte)
+                        {
+                            Console.WriteLine(ByteToString(buffer));
+                        }
+                        else
+                        {
+                            Console.WriteLine(ByteToString(buffer));
+                        }
                         break;
                     case "Чтение блока данных":
+                        byte[] dt = new byte[1024];
+                        int sz = 0;
+                        if (s7client.DBGet(dbno, dt, ref sz) == 0)
+                        {
+                            Array.Resize(ref dt, sz);
+                            Console.WriteLine(ByteToString(dt));
+                        }
+                        else
+                        {
+                            Console.WriteLine("Блока с таким номером не существует");
+                        }
+
                         break;
                     default:
                         break;
